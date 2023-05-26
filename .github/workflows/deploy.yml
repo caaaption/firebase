@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 8.5.1
+      - run: pnpm i --frozen-lockfile
+      - uses: w9jds/firebase-action@master
+        with:
+          args: deploy --project='caaaption-staging'
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
